@@ -4,6 +4,7 @@ from tkinter import Button, ttk
 from tkinter.constants import CENTER, END
 from adafruit_servokit import ServoKit
 import csv
+# object to contorl servos
 kit = ServoKit(channels=16)
  
 # store the position of servos, store 90° by default
@@ -17,8 +18,8 @@ MainWindow = tk.Tk()
 MainWindow.title('Control Servo Arm')
 MainWindow.geometry('800x550') 
 
-# Agregamos la tabla
-arbol = ttk.Treeview(MainWindow, 
+# add table of scenes
+tableScenes = ttk.Treeview(MainWindow, 
     columns = (
         'Servo[0]',
         'Servo[1]',
@@ -27,32 +28,29 @@ arbol = ttk.Treeview(MainWindow,
         'Servo[4]',
         'Servo[5]'))
 
-#encabezados de las columnas
-arbol.heading('#0', text='LOOP')
-arbol.heading('Servo[0]', text='Servo[0]')
-arbol.heading('Servo[1]', text='Servo[1]')
-arbol.heading('Servo[2]', text='Servo[2]')
-arbol.heading('Servo[3]', text='Servo[3]')
-arbol.heading('Servo[4]', text='Servo[4]')
-arbol.heading('Servo[5]', text='Servo[5]')
+# Head of columns
+tableScenes.heading('#0', text='LOOP')
+tableScenes.heading('Servo[0]', text='Servo[0]')
+tableScenes.heading('Servo[1]', text='Servo[1]')
+tableScenes.heading('Servo[2]', text='Servo[2]')
+tableScenes.heading('Servo[3]', text='Servo[3]')
+tableScenes.heading('Servo[4]', text='Servo[4]')
+tableScenes.heading('Servo[5]', text='Servo[5]')
 
-# configuracion de las columnas
-arbol.column("#0", width=70, anchor=CENTER)
-arbol.column("Servo[0]", width=50, anchor=CENTER)
-arbol.column("Servo[1]", width=50, anchor=CENTER)
-arbol.column("Servo[2]", width=50, anchor=CENTER)
-arbol.column("Servo[3]", width=50, anchor=CENTER)
-arbol.column("Servo[4]", width=50, anchor=CENTER)
-arbol.column("Servo[5]", width=50, anchor=CENTER)
+# setting of column
+tableScenes.column("#0", width=70, anchor=CENTER)
+tableScenes.column("Servo[0]", width=50, anchor=CENTER)
+tableScenes.column("Servo[1]", width=50, anchor=CENTER)
+tableScenes.column("Servo[2]", width=50, anchor=CENTER)
+tableScenes.column("Servo[3]", width=50, anchor=CENTER)
+tableScenes.column("Servo[4]", width=50, anchor=CENTER)
+tableScenes.column("Servo[5]", width=50, anchor=CENTER)
 
-# valores de la tabla
-#arbol.insert("", END, text="1", values=('0', '50','120','59','90','90'))
-#arbol.insert("", END, text="2", values=('0', '60','120','180','90','180'))
-
-# posicion de la tabla 
-arbol.place(x=400, y=10)
+# position of table 
+tableScenes.place(x=400, y=10)
  
- 
+# funcitons to control of positions servos
+
 def print_selection_0(v):
     positionServos[0] = int(v)
     kit.servo[0].angle = int(v)
@@ -63,7 +61,6 @@ def print_selection_1(v):
 
 def print_selection_2(v):
     positionServos[2] = int(v)
-    #n.config(text='you have selected ' + v)
     kit.servo[2].angle = int(v)
      
 def print_selection_3(v):
@@ -77,6 +74,9 @@ def print_selection_4(v):
 def print_selection_5(v):
     positionServos[5] = int(v)
     kit.servo[5].angle = int(v)
+
+# add sliders to control angle positions of servos 
+# each slider set values of ona servo in the position of array
 
 controlServo_0 = tk.Scale( MainWindow, label = 'Servo [0]', 
     from_ = 0, to = 180, orient = tk.HORIZONTAL, length = 300,
@@ -108,104 +108,108 @@ controlServo_5 = tk.Scale( MainWindow, label = 'Servo [5]',
     showvalue = 90, tickinterval = 45, resolution = 1,
     command = print_selection_5).place(x=10, y=410)
 
-# funcion que se ejecuta al presionar boton Grabar Posicion
-def grabarPosicion():
-    #print(arbol.get_children())
-    #print(positionServos)
-    arbol.insert("", END, 
-        text="POS {}".format(len(arbol.get_children())), 
+# functions of buttons
+# Add the values of all sliders in the table 
+def recordPosition():
+    tableScenes.insert("", END, 
+        text="POS {}".format(len(tableScenes.get_children())), 
         values=( positionServos[0], positionServos[1],
             positionServos[2], positionServos[3],
             positionServos[4], positionServos[5]))
 
-# funcion para eliminar posicion
-def eliminarPosicion():
-    posDelete = arbol.focus()
+# Delete the scene or positions of all servos that selected in table
+def deletePosition():
+    posDelete = tableScenes.focus()
     if posDelete != '':
-        #print("Elemento a eliminar ", posDelete)
-        arbol.delete(posDelete)
+        tableScenes.delete(posDelete)
 
-# establece las posiciones que se han guardado
-def ejecutarEscena():
+# Send to servos all correspondind angles in each item of scene
+def runScene():
     print("escena a ejecutar -> ", storedPositions)
     for i in range(len(storedPositions)):
-        print("loop ejecutando escena")
-        print(storedPositions[i][0], 
+        print("executing scene step : ",
+            storedPositions[i][0], 
             storedPositions[i][1], 
             storedPositions[i][2],
             storedPositions[i][3],
             storedPositions[i][4],
             storedPositions[i][5])
-        print("ejecutando escena")
         kit.servo[0].angle = int(storedPositions[i][0])
         kit.servo[1].angle = int(storedPositions[i][1])
         kit.servo[2].angle = int(storedPositions[i][2])
         kit.servo[3].angle = int(storedPositions[i][3])
         kit.servo[4].angle = int(storedPositions[i][4])
         kit.servo[5].angle = int(storedPositions[i][5])
+        # delay betwen each step
         time.sleep(1)
 
-
-def establecerEscena():
-    # obtenemos el valor de las posiciones que se encuentran en la tabla
-    data = arbol.get_children()
+def setScene():
+    aux = []
+    # get values of positions in table 
+    data = tableScenes.get_children()
     for i in data:
-        # return dictionary of data 
-        dataSimple = arbol.item(i)
+        dataSimple = tableScenes.item(i) # return dictionary of data 
         # get list of position of servos and stored in list
-        storedPositions.append(dataSimple['values'])
+        aux.append(dataSimple['values'])
+    # set global variable the update scenes in aux
+    global storedPositions 
+    storedPositions = aux
     # send to servos the angle of positions
-    print("valores guardados -> ",storedPositions)
+    print("Saved positions: ",storedPositions)
 
-def guardarEscenaArchivo():
+# save the array in the file csv
+def saveSceneFile():
     with open('angleServosScene.csv', 'w',newline='') as file:
         writer = csv.writer(file)
         for i in storedPositions:
             writer.writerow(i)
-        #writer.writerows(storedPositions)
 
-def cargarEscenaArchivo():
-    with open('angleServosScene.csv', 'r') as file:
-        csv_reader = csv.reader(file, delimiter = ',')
-        # Passing the cav_reader object to list() to get a list of lists
-        list_of_rows = list(csv_reader)
-        storedPositions = list_of_rows
-    print(storedPositions)
-    # establecemos los valore en la tabla
-    for i in range(len(storedPositions)):
-        arbol.insert("", END, 
-        text="POS {}".format(len(arbol.get_children())), 
-        values=( 
-            storedPositions[i][0], 
-            storedPositions[i][1],
-            storedPositions[i][2], 
-            storedPositions[i][3],
-            storedPositions[i][4], 
-            storedPositions[i][5]))
+# read and set values of file csv in table
+def loadSceneFile():
+    # if not data in tableScenes load the data of csv
+    if tableScenes.get_children() == ():
+        with open('angleServosScene.csv', 'r') as file:
+            csv_reader = csv.reader(file, delimiter = ',')
+            # Passing the cav_reader object to list() to get a list of lists
+            list_of_rows = list(csv_reader)
+            storedPositions = list_of_rows
+        print(storedPositions)
+        # set values in table
+        for i in range(len(storedPositions)):
+            tableScenes.insert("", END, 
+            text="POS {}".format(len(tableScenes.get_children())), 
+            values=( 
+                storedPositions[i][0], 
+                storedPositions[i][1],
+                storedPositions[i][2], 
+                storedPositions[i][3],
+                storedPositions[i][4], 
+                storedPositions[i][5]))
 
-# BOTONES
-botonGrabarPosicion = Button(MainWindow, 
+# Buttons
+buttonRecordPosition = Button(MainWindow, 
     text="Grabar Posicion", 
-    command=grabarPosicion).place(x=400, y=350)
+    command=recordPosition).place(x=400, y=350)
 
-botonEliminarPosicion = Button(MainWindow, 
+buttonDeletePosition = Button(MainWindow, 
     text="Eliminar Posicion", 
-    command=eliminarPosicion).place(x=600, y=350)
+    command=deletePosition).place(x=600, y=350)
 
-botonEjecutarEscena = Button(MainWindow, 
+buttonRunScene = Button(MainWindow, 
     text="Ejecutar Escenas", 
-    command=ejecutarEscena).place(x=600, y=500)
+    command=runScene).place(x=600, y=500)
  
-botonGuardarEsceneArchivo = Button(MainWindow,
+buttonSaveSceneFile = Button(MainWindow,
     text="Guardar en Archivo",
-    command=guardarEscenaArchivo).place(x=400, y=450)
+    command=saveSceneFile).place(x=400, y=450)
 
-botonCargarEsceneArchivo = Button(MainWindow,
+buttonLoadSceneFile = Button(MainWindow,
     text="Cargar de Archivo",
-    command=cargarEscenaArchivo).place(x=400, y=500)
+    command=loadSceneFile).place(x=400, y=500)
 
 botonEstablecerEscene = Button(MainWindow,
     text="Establecer Escena",
-    command=establecerEscena).place(x=600, y=450)
+    command=setScene).place(x=600, y=450)
 
+# Run loop the window
 MainWindow.mainloop()
