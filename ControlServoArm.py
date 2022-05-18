@@ -39,15 +39,15 @@ tableScenes.heading('Servo[5]', text='Servo[5]')
 
 # setting of column
 tableScenes.column("#0", width=70, anchor=CENTER)
-tableScenes.column("Servo[0]", width=50, anchor=CENTER)
-tableScenes.column("Servo[1]", width=50, anchor=CENTER)
-tableScenes.column("Servo[2]", width=50, anchor=CENTER)
-tableScenes.column("Servo[3]", width=50, anchor=CENTER)
-tableScenes.column("Servo[4]", width=50, anchor=CENTER)
-tableScenes.column("Servo[5]", width=50, anchor=CENTER)
+tableScenes.column("Servo[0]", width=60, anchor=CENTER)
+tableScenes.column("Servo[1]", width=60, anchor=CENTER)
+tableScenes.column("Servo[2]", width=60, anchor=CENTER)
+tableScenes.column("Servo[3]", width=60, anchor=CENTER)
+tableScenes.column("Servo[4]", width=60, anchor=CENTER)
+tableScenes.column("Servo[5]", width=60, anchor=CENTER)
 
 # position of table 
-tableScenes.place(x=400, y=10)
+tableScenes.place(x=350, y=10)
  
 # funcitons to control of positions servos
 
@@ -78,32 +78,32 @@ def print_selection_5(v):
 # add sliders to control angle positions of servos 
 # each slider set values of ona servo in the position of array
 
-controlServo_0 = tk.Scale( MainWindow, label = 'Servo [0]', 
+controlServo_0 = tk.Scale( MainWindow, label = 'Servo [0] - Base', 
     from_ = 0, to = 180, orient = tk.HORIZONTAL, length = 300,
     showvalue = 90, tickinterval = 45, resolution = 1, 
     command = print_selection_0).place(x=10, y=10)
 
-controlServo_1 = tk.Scale( MainWindow, label = 'Servo [1]', 
+controlServo_1 = tk.Scale( MainWindow, label = 'Servo [1] - Hombro', 
     from_ = 0, to = 180, orient = tk.HORIZONTAL, length = 300, 
     showvalue = 90, tickinterval = 45, resolution = 1,
     command = print_selection_1).place(x=10, y=90)
 
-controlServo_2 = tk.Scale( MainWindow, label = 'Servo [2]', 
+controlServo_2 = tk.Scale( MainWindow, label = 'Servo [2] - Codo', 
     from_ = 0, to = 180, orient = tk.HORIZONTAL, length = 300, 
     showvalue = 90, tickinterval = 45, resolution = 1,
     command = print_selection_2).place(x=10, y=170)
 
-controlServo_3 = tk.Scale( MainWindow, label = 'Servo [3]', 
+controlServo_3 = tk.Scale( MainWindow, label = 'Servo [3] - Mano', 
     from_ = 0, to = 180, orient = tk.HORIZONTAL, length = 300, 
     showvalue = 90, tickinterval = 45, resolution = 1,
     command = print_selection_3).place(x=10, y=250)
 
-controlServo_4 = tk.Scale( MainWindow, label = 'Servo [4]', 
+controlServo_4 = tk.Scale( MainWindow, label = 'Servo [4] - Muñeca', 
     from_ = 0, to = 180, orient = tk.HORIZONTAL, length = 300, 
     showvalue = 90, tickinterval = 45, resolution = 1,
     command = print_selection_4).place(x=10, y=330)
 
-controlServo_5 = tk.Scale( MainWindow, label = 'Servo [5]', 
+controlServo_5 = tk.Scale( MainWindow, label = 'Servo [5] - Gripper', 
     from_ = 0, to = 180, orient = tk.HORIZONTAL, length = 300, 
     showvalue = 90, tickinterval = 45, resolution = 1,
     command = print_selection_5).place(x=10, y=410)
@@ -186,6 +186,21 @@ def loadSceneFile():
                 storedPositions[i][4], 
                 storedPositions[i][5]))
 
+def OnDoubleClickRowTable(event):
+    # get item on double clicked
+    item = tableScenes.selection()[0]
+    # get values of angles of servos
+    # >>> tableScenes.item(item)
+    # return
+    # {
+    #   'text': 'POS 1', 
+    #   'image': '', 
+    #   'values': [180, 180, 180, 180, 180, 180], 
+    #   'open': 0, 
+    #   'tags': ''
+    # } 
+
+
 # Buttons
 buttonRecordPosition = Button(MainWindow, 
     text="Grabar Posicion", 
@@ -210,6 +225,8 @@ buttonLoadSceneFile = Button(MainWindow,
 botonEstablecerEscene = Button(MainWindow,
     text="Establecer Escena",
     command=setScene).place(x=600, y=450)
+
+tableScenes.bind("<Double-1>", OnDoubleClickRowTable)
 
 # Run loop the window
 MainWindow.mainloop()

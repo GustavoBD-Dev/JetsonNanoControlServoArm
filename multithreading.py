@@ -1,59 +1,34 @@
 import threading
 import time
+from adafruit_servokit import ServoKit
 
-positionServos = [90,90,90,90,90,90]
-timeControl = 0.05
+# object to contorl servos
+kit = ServoKit(channels=16)
 
-
-def moveServo(servo, actualPosition, newAnglePosition):
-    #print("Hola Mundo " + str(servo) + " " + str(actualPosition) + " " + str(newAnglePosition))
-    if newAnglePosition < actualPosition:
-        for i in range(actualPosition, newAnglePosition - 1, -1):
-            # set pos servo increment, set value i
-            # print(servo, ' ', i)
-            positionServos[servo] = i
-            time.sleep(timeControl) # time in seconds
-    elif newAnglePosition > actualPosition:
-        for i in range(actualPosition, newAnglePosition + 1, 1):
-            # set pos servo decrement, set value i
-            # print(servo, ' ', i)
-            positionServos[servo] = i
-            time.sleep(timeControl) # time in seconds
-    else:
-        print('NO MOVE SERVO')
-    print(positionServos)
+def moveServo(servo, actualAnglePosition, newAnglePosition):
+#kit.servo[0].angle = int(v)
+    if newAnglePosition < actualAnglePosition:
+        for i in range(actualAnglePosition, newAnglePosition - 1, -1):
+            kit.servo[servo].angle = int(i)
+            time.sleep(1/100)
+    elif newAnglePosition > actualAnglePosition:
+        for i in range(actualAnglePosition, newAnglePosition + 1, 1):
+            kit.servo[servo].angle = int(i)
+            time.sleep(1/100)
 
 
-def getExecuteData():
-    import csv
-    storedPositions = []
-    with open('angleServosScene.csv', 'r') as file:
-        csv_reader = csv.reader(file, delimiter = ',')
-        list_of_rows = list(csv_reader)
-        storedPositions = list_of_rows
-    print(storedPositions)
-    return storedPositions
+t0 = threading.Thread(name="Hilo_0", target=moveServo, args=(0, 90, 90, ))
+t1 = threading.Thread(name="Hilo_1", target=moveServo, args=(1, 90, 26, ))
+t2 = threading.Thread(name="Hilo_2", target=moveServo, args=(2, 90, 77, ))
+t3 = threading.Thread(name="Hilo_3", target=moveServo, args=(3, 90, 95, ))
+t4 = threading.Thread(name="Hilo_4", target=moveServo, args=(4, 90, 22, ))
+t5 = threading.Thread(name="Hilo_5", target=moveServo, args=(5, 90, 90, ))
 
-
-
-
-if __name__ == "__main__":
-
-    # Get data of file csv
-    storedPositions = getExecuteData()
-
-    print(positionServos)
-    threadServos = []
-    # thread aux variable
-    thread = None
-
-    for i in range(6):
-        thread = threading.Thread(
-                        target = moveServo, 
-                        args = (i, 90, 120,))
-        threadServos.append(thread) 
-
-    for i in range(6):
-       threadServos[i].start()
+t0.start()
+t1.start()
+t2.start()
+t3.start()
+t4.start()
+t5.start()
 
 
