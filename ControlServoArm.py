@@ -175,7 +175,7 @@ def loadSceneFile():
             storedPositions = list_of_rows
         print(storedPositions)
         # set values in table
-        for i in range(len(storedPositions)):
+        for i in range(len(storedPositions)-1):
             tableScenes.insert("", END, 
             text="POS {}".format(len(tableScenes.get_children())), 
             values=( 
