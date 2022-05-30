@@ -7,7 +7,7 @@ import asyncio
 
 async def runScene(script):
   print("Ejecutando: ", script)
-  await time.sleep(1)
+  await time.sleep(5)
   print("Fin de escena ", script)
 
 
@@ -23,12 +23,14 @@ def dibujar(mask,color):
             cv2.putText(frame,'Azul',(x-10,y-10),font,0.75,color,2,cv2.LINE_AA)
             print("azul")
             colorDetectado = True
+            asyncio.run(runScene("BLUE"))
         #arduino.write(cad.encode('ascii'))
         elif color == (0,255,0):
             cv2.rectangle(frame,(x,y),(x+w,y+h),color,3)
             cv2.putText(frame,'Verde',(x-10,y-10),font,0.75,color,2,cv2.LINE_AA)
             print("verde")
             colorDetectado = True
+            asyncio.run(runScene("GREEN"))
         #arduino.write(cad.encode('ascii'))
         elif color == (0,0,255):
             cv2.rectangle(frame,(x,y),(x+w,y+h),color,3)
@@ -36,6 +38,7 @@ def dibujar(mask,color):
             print("rojo")
             colorDetectado = True
             cad = 'r'
+            asyncio.run(runScene("RED"))
         #arduino.write(cad.encode('ascii'))
         else:
             print("No color")
@@ -71,7 +74,7 @@ rojoAlto = np.array(Alto,np.uint8)
 
 
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 font = cv2.FONT_HERSHEY_SIMPLEX
 
